@@ -1,0 +1,14 @@
+/build
+/.idea
+/.vs
+/.vscode
+*/obj
+*/bin
+*/build
+*/Debug
+*/Release
+/TestResults
+*/x64
+*/.vs
+/StgSharp.Native/lib
+obj
