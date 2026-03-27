@@ -1,4 +1,6 @@
 /build
+/out
+/clangcl-build.log
 /.idea
 /.vs
 /.vscode
@@ -12,3 +14,4 @@
 */.vs
 /StgSharp.Native/lib
 obj
+.cr

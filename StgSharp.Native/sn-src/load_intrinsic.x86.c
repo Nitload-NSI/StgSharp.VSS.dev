@@ -51,20 +51,20 @@ void load_intrinsic_sse(sn_intrinsic *context, SIMDID id)
         context->city_hash_simplify = city_hash_simplify_sse;
         context->factorial_simd = factorial_simd_sse;
 
-        context->mat_mk[F32].add = MK_PROC_NAME_STD(float, sse, , add);
-        context->mat_mk[F32].fill = MK_PROC_NAME_STD(float, sse, , fill);
-        context->mat_mk[F32].scalar_mul = MK_PROC_NAME_STD(float, sse, , scalar_mul);
-        context->mat_mk[F32].sub = MK_PROC_NAME_STD(float, sse, , sub);
-        context->mat_mk[F32].transpose = MK_PROC_NAME_STD(float, sse, , transpose);
-        context->mat_mk[F32].fma = MK_PROC_NAME_STD(float, sse, , fma);
+        context->mat_mk[F32].add = GET_MK_PROC_STD(float, sse, , add);
+        context->mat_mk[F32].fill = GET_MK_PROC_STD(float, sse, , fill);
+        context->mat_mk[F32].scalar_mul = GET_MK_PROC_STD(float, sse, , scalar_mul);
+        context->mat_mk[F32].sub = GET_MK_PROC_STD(float, sse, , sub);
+        context->mat_mk[F32].transpose = GET_MK_PROC_STD(float, sse, , transpose);
+        context->mat_mk[F32].fma = GET_MK_PROC_STD(float, sse, , fma);
         context->mat_mk[F32].pivot = NULL;
 
-        context->mat_mk[F64].add = MK_PROC_NAME_STD(double, sse, , add);
-        context->mat_mk[F64].fill = MK_PROC_NAME_STD(double, sse, , fill);
-        context->mat_mk[F64].scalar_mul = MK_PROC_NAME_STD(double, sse, , scalar_mul);
-        context->mat_mk[F64].sub = MK_PROC_NAME_STD(double, sse, , sub);
+        context->mat_mk[F64].add = GET_MK_PROC_STD(double, sse, , add);
+        context->mat_mk[F64].fill = GET_MK_PROC_STD(double, sse, , fill);
+        context->mat_mk[F64].scalar_mul = GET_MK_PROC_STD(double, sse, , scalar_mul);
+        context->mat_mk[F64].sub = GET_MK_PROC_STD(double, sse, , sub);
         context->mat_mk[F64].transpose = NULL;
-        context->mat_mk[F64].fma = MK_PROC_NAME_STD(double, sse, , fma);
+        context->mat_mk[F64].fma = GET_MK_PROC_STD(double, sse, , fma);
         context->mat_mk[F64].pivot = NULL;
 
         context->vec_f32_normalize_3 = f32_normalize;
@@ -79,22 +79,22 @@ void load_intrinsic_avx(sn_intrinsic *context, SIMDID id)
         context->city_hash_simplify = city_hash_simplify_sse;
         context->factorial_simd = factorial_simd_sse;
 
-        context->mat_mk[F32].add = MK_PROC_NAME_STD(float, avx, , add);
-        context->mat_mk[F32].fill = MK_PROC_NAME_STD(float, avx, , fill);
-        context->mat_mk[F32].scalar_mul = MK_PROC_NAME_STD(float, avx, , scalar_mul);
-        context->mat_mk[F32].sub = MK_PROC_NAME_STD(float, avx, , sub);
-        context->mat_mk[F32].transpose = MK_PROC_NAME_STD(float, avx, , transpose);
-        context->mat_mk[F32].fma = is_fma ? MK_PROC_NAME_STD(float, avx, , fma) :
-                                            MK_PROC_NAME_STD(float, avx, _fma, fma);
+        context->mat_mk[F32].add = GET_MK_PROC_STD(float, avx, , add);
+        context->mat_mk[F32].fill = GET_MK_PROC_STD(float, avx, , fill);
+        context->mat_mk[F32].scalar_mul = GET_MK_PROC_STD(float, avx, , scalar_mul);
+        context->mat_mk[F32].sub = GET_MK_PROC_STD(float, avx, , sub);
+        context->mat_mk[F32].transpose = GET_MK_PROC_STD(float, avx, , transpose);
+        context->mat_mk[F32].fma = is_fma ? GET_MK_PROC_STD(float, avx, , fma) :
+                                            GET_MK_PROC_STD(float, avx, _fma, fma);
         context->mat_mk[F32].pivot = NULL;
 
-        context->mat_mk[F64].add = MK_PROC_NAME_STD(double, avx, , add);
-        context->mat_mk[F64].fill = MK_PROC_NAME_STD(double, avx, , fill);
-        context->mat_mk[F64].scalar_mul = MK_PROC_NAME_STD(double, avx, , scalar_mul);
-        context->mat_mk[F64].sub = MK_PROC_NAME_STD(double, avx, , sub);
+        context->mat_mk[F64].add = GET_MK_PROC_STD(double, avx, , add);
+        context->mat_mk[F64].fill = GET_MK_PROC_STD(double, avx, , fill);
+        context->mat_mk[F64].scalar_mul = GET_MK_PROC_STD(double, avx, , scalar_mul);
+        context->mat_mk[F64].sub = GET_MK_PROC_STD(double, avx, , sub);
         context->mat_mk[F64].transpose = NULL;
-        context->mat_mk[F64].fma = is_fma ? MK_PROC_NAME_STD(double, avx, , fma) :
-                                            MK_PROC_NAME_STD(double, avx, _fma, fma);
+        context->mat_mk[F64].fma = is_fma ? GET_MK_PROC_STD(double, avx, , fma) :
+                                            GET_MK_PROC_STD(double, avx, _fma, fma);
         context->mat_mk[F64].pivot = NULL;
 
         context->vec_f32_normalize_3 = f32_normalize;
@@ -105,20 +105,20 @@ void load_intrinsic_512(sn_intrinsic *context, SIMDID id)
         context->city_hash_simplify = city_hash_simplify_sse;
         context->factorial_simd = factorial_simd_sse;
 
-        context->mat_mk[F32].add = MK_PROC_NAME_STD(float, 512, , add);
-        context->mat_mk[F32].fill = MK_PROC_NAME_STD(float, 512, , fill);
-        context->mat_mk[F32].scalar_mul = MK_PROC_NAME_STD(float, 512, , scalar_mul);
-        context->mat_mk[F32].sub = MK_PROC_NAME_STD(float, 512, , sub);
-        context->mat_mk[F32].transpose = MK_PROC_NAME_STD(float, 512, , transpose);
-        context->mat_mk[F32].fma = MK_PROC_NAME_STD(float, 512, , fma);
+        context->mat_mk[F32].add = GET_MK_PROC_STD(float, 512, , add);
+        context->mat_mk[F32].fill = GET_MK_PROC_STD(float, 512, , fill);
+        context->mat_mk[F32].scalar_mul = GET_MK_PROC_STD(float, 512, , scalar_mul);
+        context->mat_mk[F32].sub = GET_MK_PROC_STD(float, 512, , sub);
+        context->mat_mk[F32].transpose = GET_MK_PROC_STD(float, 512, , transpose);
+        context->mat_mk[F32].fma = GET_MK_PROC_STD(float, 512, , fma);
         context->mat_mk[F32].pivot = NULL;
 
-        context->mat_mk[F64].add = MK_PROC_NAME_STD(double, 512, , add);
-        context->mat_mk[F64].fill = MK_PROC_NAME_STD(double, 512, , fill);
-        context->mat_mk[F64].scalar_mul = MK_PROC_NAME_STD(double, 512, , scalar_mul);
-        context->mat_mk[F64].sub = MK_PROC_NAME_STD(double, 512, , sub);
+        context->mat_mk[F64].add = GET_MK_PROC_STD(double, 512, , add);
+        context->mat_mk[F64].fill = GET_MK_PROC_STD(double, 512, , fill);
+        context->mat_mk[F64].scalar_mul = GET_MK_PROC_STD(double, 512, , scalar_mul);
+        context->mat_mk[F64].sub = GET_MK_PROC_STD(double, 512, , sub);
         context->mat_mk[F64].transpose = NULL;
-        context->mat_mk[F64].fma = MK_PROC_NAME_STD(double, 512, , fma);
+        context->mat_mk[F64].fma = GET_MK_PROC_STD(double, 512, , fma);
         context->mat_mk[F64].pivot = NULL;
 
         context->vec_f32_normalize_3 = f32_normalize;

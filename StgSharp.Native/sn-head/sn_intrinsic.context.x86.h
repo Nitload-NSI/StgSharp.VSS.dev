@@ -132,7 +132,7 @@
 
 #pragma region matix function
 
-INTERNAL void f32_normalize(VEC(float) * source, VEC(float) * target);
+INTERNAL void f32_normalize(sn_vec_f32 * source, sn_vec_f32 * target);
 
 SN_MK_PROC_DECL_STD(float, sse, , add);
 SN_MK_PROC_DECL_STD(float, avx, , add);

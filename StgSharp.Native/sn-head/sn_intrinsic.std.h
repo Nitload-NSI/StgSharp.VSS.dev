@@ -8,16 +8,18 @@
 #define static_assert _Static_assert
 #endif
 
-#define mat_task_local ((_mat_task_local const *)task)
-
 #define MK_PROC_NAME_STD(T_type, T_arch, T_feature, T_op) \
         T_type##_multi_kernel_proc_##T_op##_##T_arch##_##T_feature
+#define GET_MK_PROC_STD(T_type, T_arch, T_feature, T_op) \
+        ((UNI_MK_PROC)MK_PROC_NAME_STD(T_type, T_arch, T_feature, T_op))
 #define SN_MK_PROC_DECL(T_type, P_name) INTERNAL void SN_DECL P_name(MAT_TASK(T_type) const *task)
 #define SN_MK_PROC_DECL_STD(T_type, T_arch, T_feature, T_op)                          \
         INTERNAL FORCEINLINE void SN_DECL MK_PROC_NAME_STD(T_type, T_arch, T_feature, \
                                                            T_op)(MAT_TASK(T_type) const *task)
 #define SK_PROC_NAME_STD(T_type, T_arch, T_feature, T_op) \
         T_type##_single_kernel_proc_##T_op##_##T_arch##_##T_feature
+#define GET_SK_PROC_STD(T_type, T_arch, T_feature, T_op) \
+        ((UNI_SK_PROC)SK_PROC_NAME_STD(T_type, T_arch, T_feature, T_op))
 #define SN_SK_PROC_DECL_STD(T_type, T_arch, T_feature, T_op)                                 \
         INTERNAL FORCEINLINE void SN_DECL SK_PROC_NAME_STD(T_type, T_arch, T_feature, T_op)( \
                 MAT_KERNEL(T_type) const *left, MAT_KERNEL(T_type) const *right,             \
@@ -37,28 +39,28 @@
 #define _SN_MATPROC_ANS_SCALAR 1
 
 #define _SN_MK_EXPAND_RIGHT_ANS                                   \
-        SN_MAT_KERNEL_LOCAL const *right = mat_task_local->mat_1; \
-        SN_MAT_KERNEL_LOCAL *restrict ans = mat_task_local->mat_2;
+        SN_MAT_KERNEL_LOCAL const *right = (SN_MAT_KERNEL_LOCAL const *)task->mat_1; \
+        SN_MAT_KERNEL_LOCAL *restrict ans = (SN_MAT_KERNEL_LOCAL *)task->mat_2;
 
 #define _SN_MK_EXPAND_LEFT_RIGHT_ANS                              \
-        SN_MAT_KERNEL_LOCAL const *left = mat_task_local->mat_0;  \
-        SN_MAT_KERNEL_LOCAL const *right = mat_task_local->mat_1; \
-        SN_MAT_KERNEL_LOCAL *restrict ans = mat_task_local->mat_2;
+        SN_MAT_KERNEL_LOCAL const *left = (SN_MAT_KERNEL_LOCAL const *)task->mat_0;  \
+        SN_MAT_KERNEL_LOCAL const *right = (SN_MAT_KERNEL_LOCAL const *)task->mat_1; \
+        SN_MAT_KERNEL_LOCAL *restrict ans = (SN_MAT_KERNEL_LOCAL *)task->mat_2;
 
 #define _SN_MK_EXPAND_RIGHT_ANS_SCALAR                             \
-        SN_MAT_KERNEL_LOCAL const *right = mat_task_local->mat_1;  \
-        SN_MAT_KERNEL_LOCAL *restrict ans = mat_task_local->mat_2; \
-        scalar_pack *restrict scalar = mat_task_local->scalar;
+        SN_MAT_KERNEL_LOCAL const *right = (SN_MAT_KERNEL_LOCAL const *)task->mat_1;  \
+        SN_MAT_KERNEL_LOCAL *restrict ans = (SN_MAT_KERNEL_LOCAL *)task->mat_2; \
+        scalar_pack *restrict scalar = (scalar_pack *restrict)task->scalar;
 
 #define _SN_MK_EXPAND_LEFT_RIGHT_ANS_SCALAR                        \
-        SN_MAT_KERNEL_LOCAL const *left = mat_task_local->mat_0;   \
-        SN_MAT_KERNEL_LOCAL const *right = mat_task_local->mat_1;  \
-        SN_MAT_KERNEL_LOCAL *restrict ans = mat_task_local->mat_2; \
-        scalar_pack *restrict scalar = mat_task_local->scalar;
+        SN_MAT_KERNEL_LOCAL const *left = (SN_MAT_KERNEL_LOCAL const *)task->mat_0;   \
+        SN_MAT_KERNEL_LOCAL const *right = (SN_MAT_KERNEL_LOCAL const *)task->mat_1;  \
+        SN_MAT_KERNEL_LOCAL *restrict ans = (SN_MAT_KERNEL_LOCAL *)task->mat_2; \
+        scalar_pack *restrict scalar = (scalar_pack *restrict)task->scalar;
 
 #define _SN_MK_EXPAND_ANS_SCALAR                                   \
-        SN_MAT_KERNEL_LOCAL *restrict ans = mat_task_local->mat_2; \
-        scalar_pack *restrict scalar = &(mat_task_local->padding);
+        SN_MAT_KERNEL_LOCAL *restrict ans = (SN_MAT_KERNEL_LOCAL *)task->mat_2; \
+        scalar_pack *restrict scalar = (scalar_pack *restrict)&(task->padding);
 
 #define _SN_PARAM_STYLE(T) _SN_MATPROC_##T
 #define _SN_MK_EXPAND_PARAM(style) _SN_MK_EXPAND_##style
@@ -93,10 +95,9 @@
 
 #pragma endregion
 
-#define __mk_param_std(mem, param, T)                                               \
-        typedef MAT_KERNEL(T) SN_MAT_KERNEL_LOCAL;                                  \
-        typedef MAT_TASK(T) _mat_task_local;                                        \
-        _mat_task_local *_ = (_SN_PARAM_STYLE(param), (_SN_MEM_LAYOUT(mem)), task); \
-        _SN_MK_EXPAND_PARAM(param);                                                 \
+#define __mk_param_std(mem, param, T)                       \
+        typedef MAT_KERNEL(T) SN_MAT_KERNEL_LOCAL;          \
+        matrix_task const *_ = (_SN_PARAM_STYLE(param), (_SN_MEM_LAYOUT(mem)), task); \
+        _SN_MK_EXPAND_PARAM(param);                         \
         _SN_MK_EXPAND_MEM(mem)
 #endif // !SN_INTRINSIC_PARAM_EXPAND

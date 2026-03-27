@@ -55,7 +55,7 @@ typedef struct Image {
 typedef char *(*imageLoader)(char const *filename, int *x, int *y, int *channels_in_file,
                              int desired_channels);
 
-SN_API char infolog[512];
+extern SN_API char infolog[512];
 SN_API int SN_DECL glCheckShaderStat(GladGLContext *context, uint64_t shaderHandle, int key,
                                      char **logRef);
 SN_API void SN_DECL initGL(int majorVersion, int minorVersion);

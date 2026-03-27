@@ -16,8 +16,7 @@ SN_MK_PROC_DECL_STD(float, sse, , fma)
 {
         __mk_param_std(TILE, LEFT_RIGHT_ANS, float);
 
-        MAT_KERNEL(float)
-        const *ans_cur = ans + GET_INDEX(common_y, x, y); // GetKernelAddressUnsafe
+        SN_MAT_KERNEL_LOCAL const *ans_cur = ans + GET_INDEX(common_y, x, y); // GetKernelAddressUnsafe
 
         register __m128 c0 = _mm_load_ps((float *)&ans_cur->f32_x[0]);
         register __m128 c1 = _mm_load_ps((float *)&ans_cur->f32_x[1]);
@@ -26,8 +25,8 @@ SN_MK_PROC_DECL_STD(float, sse, , fma)
         register __m128 bcol;
 
         for (size_t z = 0; z < common_z; z++) {
-                SN_MAT_KERNEL_LOCAL const *right_cur = right + GET_INDEX(common_z, x, z),
-                                          const *left_cur = left + GET_INDEX(common_y, z, y);
+                SN_MAT_KERNEL_LOCAL const *right_cur = right + GET_INDEX(common_z, x, z);
+                SN_MAT_KERNEL_LOCAL const *left_cur = left + GET_INDEX(common_y, z, y);
 
                 const __m128 a0 = _mm_load_ps((float *)&left_cur->f32_x[0]);
                 const __m128 a1 = _mm_load_ps((float *)&left_cur->f32_x[1]);
@@ -71,20 +70,16 @@ SN_MK_PROC_DECL_STD(float, sse, , fma)
 
 SN_MK_PROC_DECL_STD(float, avx, , fma)
 {
-        static const __m256i b01_shift_source = { .m256i_i32 = { 0, 1, 2, 3, 5, 6, 7, 4 } };
-        static const __m256i b23_shift_source = { .m256i_i32 = { 2, 3, 0, 1, 7, 4, 5, 6 } };
-
         __mk_param_std(TILE, LEFT_RIGHT_ANS, float);
 
-        MAT_KERNEL(float)
-        const *ans_cur = ans + GET_INDEX(common_y, x, y); // GetKernelAddressUnsafe
+        SN_MAT_KERNEL_LOCAL const *ans_cur = ans + GET_INDEX(common_y, x, y); // GetKernelAddressUnsafe
 
-        register __m256 c01 = _mm256_load_ps((float *)&ans->f32_y[0]);
-        register __m256 c23 = _mm256_load_ps((float *)&ans->f32_y[1]);
+        register __m256 c01 = _mm256_load_ps((float *)&ans_cur->f32_y[0]);
+        register __m256 c23 = _mm256_load_ps((float *)&ans_cur->f32_y[1]);
 
         for (size_t z = 0; z < common_z; z++) {
-                SN_MAT_KERNEL_LOCAL const *right_cur = right + GET_INDEX(common_z, x, z),
-                                          const *left_cur = left + GET_INDEX(common_y, z, y);
+                SN_MAT_KERNEL_LOCAL const *right_cur = right + GET_INDEX(common_z, x, z);
+                SN_MAT_KERNEL_LOCAL const *left_cur = left + GET_INDEX(common_y, z, y);
 
                 register __m256 b01 = _mm256_load_ps((float *)&right_cur->f32_y[0]);
                 register __m256 b23 = _mm256_load_ps((float *)&right_cur->f32_y[1]);
@@ -110,28 +105,27 @@ SN_MK_PROC_DECL_STD(float, avx, _fma, fma)
 {
         __mk_param_std(TILE, LEFT_RIGHT_ANS, float);
 
-        MAT_KERNEL(float)
-        const *ans_cur = ans + GET_INDEX(common_y, x, y); // GetKernelAddressUnsafe
+        SN_MAT_KERNEL_LOCAL const *ans_cur = ans + GET_INDEX(common_y, x, y); // GetKernelAddressUnsafe
 
         register __m256 c01 = _mm256_load_ps((float *)&ans_cur->f32_y[0]);
         register __m256 c23 = _mm256_load_ps((float *)&ans_cur->f32_y[1]);
 
         for (size_t z = 0; z < common_z; z++) {
-                SN_MAT_KERNEL_LOCAL const *right_cur = right + GET_INDEX(common_z, x, z),
-                                          const *left_cur = left + GET_INDEX(common_y, z, y);
+                SN_MAT_KERNEL_LOCAL const *right_cur = right + GET_INDEX(common_z, x, z);
+                SN_MAT_KERNEL_LOCAL const *left_cur = left + GET_INDEX(common_y, z, y);
                 register __m256 b01 = _mm256_load_ps((float *)&right_cur->f32_y[0]);
                 register __m256 b23 = _mm256_load_ps((float *)&right_cur->f32_y[1]);
 
-                register __m256 a0 = _mm256_broadcast_ps((float *)&left_cur->f32_x[0]);
+                register __m256 a0 = _mm256_broadcast_ps(&left_cur->f32_x[0]);
                 c01 = _mm256_fmadd_ps(a0, b01, c01);
                 c23 = _mm256_fmadd_ps(a0, b23, c23);
-                register __m256 a1 = _mm256_broadcast_ps((float *)&left_cur->f32_x[1]);
+                register __m256 a1 = _mm256_broadcast_ps(&left_cur->f32_x[1]);
                 c01 = _mm256_fmadd_ps(a1, b01, c01);
                 c23 = _mm256_fmadd_ps(a1, b23, c23);
-                register __m256 a2 = _mm256_broadcast_ps((float *)&left_cur->f32_x[2]);
+                register __m256 a2 = _mm256_broadcast_ps(&left_cur->f32_x[2]);
                 c01 = _mm256_fmadd_ps(a2, b01, c01);
                 c23 = _mm256_fmadd_ps(a2, b23, c23);
-                register __m256 a3 = _mm256_broadcast_ps((float *)&left_cur->f32_x[3]);
+                register __m256 a3 = _mm256_broadcast_ps(&left_cur->f32_x[3]);
                 c01 = _mm256_fmadd_ps(a3, b01, c01);
                 c23 = _mm256_fmadd_ps(a3, b23, c23);
         }
@@ -210,8 +204,7 @@ SN_MK_PROC_DECL_STD(double, sse, , fma)
 {
         __mk_param_std(TILE, LEFT_RIGHT_ANS, double);
 
-        MAT_KERNEL(double)
-        const *ans_cur = ans + GET_INDEX(common_y, x, y); // GetKernelAddressUnsafe
+        SN_MAT_KERNEL_LOCAL const *ans_cur = ans + GET_INDEX(common_y, x, y); // GetKernelAddressUnsafe
 
         register __m128d c0_lo = _mm_load_pd(ans_cur->f64_x + (0 * 2 + 0));
         register __m128d c0_hi = _mm_load_pd(ans_cur->f64_x + (0 * 2 + 1));
@@ -223,8 +216,8 @@ SN_MK_PROC_DECL_STD(double, sse, , fma)
         register __m128d c3_hi = _mm_load_pd(ans_cur->f64_x + (3 * 2 + 1));
 
         for (size_t z = 0; z < common_z; z++) {
-                SN_MAT_KERNEL_LOCAL const *right_cur = right + GET_INDEX(common_z, x, z),
-                                          const *left_cur = left + GET_INDEX(common_y, z, y);
+                SN_MAT_KERNEL_LOCAL const *right_cur = right + GET_INDEX(common_z, x, z);
+                SN_MAT_KERNEL_LOCAL const *left_cur = left + GET_INDEX(common_y, z, y);
 
                 DOUBLE_KERNEL_FMA_CYCLE(0);
 
@@ -249,8 +242,7 @@ SN_MK_PROC_DECL_STD(double, avx, , fma)
 {
         __mk_param_std(TILE, LEFT_RIGHT_ANS, double);
 
-        MAT_KERNEL(double)
-        const *ans_cur = ans + GET_INDEX(common_y, x, y); // GetKernelAddressUnsafe
+        SN_MAT_KERNEL_LOCAL const *ans_cur = ans + GET_INDEX(common_y, x, y); // GetKernelAddressUnsafe
 
         register __m256d c0 = _mm256_load_pd((double *)&ans_cur->f64_y[0]);
         register __m256d c1 = _mm256_load_pd((double *)&ans_cur->f64_y[1]);
@@ -259,8 +251,8 @@ SN_MK_PROC_DECL_STD(double, avx, , fma)
         register __m256d bcol;
 
         for (size_t z = 0; z < common_z; z++) {
-                SN_MAT_KERNEL_LOCAL const *right_cur = right + GET_INDEX(common_z, x, z),
-                                          const *left_cur = left + GET_INDEX(common_y, z, y);
+                SN_MAT_KERNEL_LOCAL const *right_cur = right + GET_INDEX(common_z, x, z);
+                SN_MAT_KERNEL_LOCAL const *left_cur = left + GET_INDEX(common_y, z, y);
 
                 const __m256d a0 = _mm256_load_pd((double *)&left_cur->f64_y[0]);
                 const __m256d a1 = _mm256_load_pd((double *)&left_cur->f64_y[1]);
@@ -322,8 +314,7 @@ SN_MK_PROC_DECL_STD(double, avx, _fma, fma)
 {
         __mk_param_std(TILE, LEFT_RIGHT_ANS, double);
 
-        MAT_KERNEL(double)
-        const *ans_cur = ans + GET_INDEX(common_y, x, y); // GetKernelAddressUnsafe
+        SN_MAT_KERNEL_LOCAL const *ans_cur = ans + GET_INDEX(common_y, x, y); // GetKernelAddressUnsafe
 
         register __m256d c0 = _mm256_load_pd((double *)&ans_cur->f64_y[0]);
         register __m256d c1 = _mm256_load_pd((double *)&ans_cur->f64_y[1]);
@@ -332,8 +323,8 @@ SN_MK_PROC_DECL_STD(double, avx, _fma, fma)
         register __m256d bcol;
 
         for (size_t z = 0; z < common_z; z++) {
-                SN_MAT_KERNEL_LOCAL const *right_cur = right + GET_INDEX(common_z, x, z),
-                                          const *left_cur = left + GET_INDEX(common_y, z, y);
+                SN_MAT_KERNEL_LOCAL const *right_cur = right + GET_INDEX(common_z, x, z);
+                SN_MAT_KERNEL_LOCAL const *left_cur = left + GET_INDEX(common_y, z, y);
 
                 const __m256d a0 = _mm256_load_pd((double *)&left_cur->f64_y[0]);
                 const __m256d a1 = _mm256_load_pd((double *)&left_cur->f64_y[1]);
@@ -379,15 +370,14 @@ SN_MK_PROC_DECL_STD(double, 512, , fma)
 {
         __mk_param_std(TILE, LEFT_RIGHT_ANS, double);
 
-        MAT_KERNEL(double)
-        const *ans_cur = ans + GET_INDEX(common_y, x, y);
+        SN_MAT_KERNEL_LOCAL const *ans_cur = ans + GET_INDEX(common_y, x, y);
 
-        register __m512d c01 = _mm512_load_pd((double *)&ans->f64_z[0]);
-        register __m512d c23 = _mm512_load_pd((double *)&ans->f64_z[1]);
+        register __m512d c01 = _mm512_load_pd((double *)&ans_cur->f64_z[0]);
+        register __m512d c23 = _mm512_load_pd((double *)&ans_cur->f64_z[1]);
 
         for (size_t z = 0; z < common_z; z++) {
-                SN_MAT_KERNEL_LOCAL const *right_cur = right + GET_INDEX(common_z, x, z),
-                                          const *left_cur = left + GET_INDEX(common_y, z, y);
+                SN_MAT_KERNEL_LOCAL const *right_cur = right + GET_INDEX(common_z, x, z);
+                SN_MAT_KERNEL_LOCAL const *left_cur = left + GET_INDEX(common_y, z, y);
 
                 register __m512d a01 = _mm512_load_pd((double *)&left_cur->f64_z[0]);
                 register __m512d a23 = _mm512_load_pd((double *)&left_cur->f64_z[1]);
